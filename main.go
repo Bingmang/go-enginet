@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"go-enginet/enginet"
 	"log"
 	"net/http"
@@ -12,7 +11,7 @@ type Config struct {
 	Host, Port string
 }
 
-func NewConfig() *Config {
+func newConfig() *Config {
 	conf := new(Config)
 	conf.Host = "localhost"
 	conf.Port = "8080"
@@ -26,17 +25,15 @@ func NewConfig() *Config {
 }
 
 func main() {
-	conf := NewConfig()
+	conf := newConfig()
 	r := enginet.New()
-	r.GET("/", func(w http.ResponseWriter, r *http.Request) {
-		_, _ = fmt.Fprintf(w, "URL.Path = %q\n", r.URL.Path)
+	r.GET("/", func(ctx *enginet.Context) {
+		ctx.String(http.StatusOK, "奥利给")
 	})
-
-	r.GET("/hello", func(w http.ResponseWriter, r *http.Request) {
-		for k,v := range r.Header {
-			_, _ = fmt.Fprintf(w, "Header[%q] = %q\n", k, v)
-		}
+	r.GET("/hello", func(ctx *enginet.Context) {
+		ctx.JSON(http.StatusOK, enginet.H{
+			"key": "value",
+		})
 	})
 	log.Fatal(r.Run(conf.Host + ":" + conf.Port))
 }
-
