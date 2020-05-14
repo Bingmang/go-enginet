@@ -30,9 +30,9 @@ func main() {
 	r.GET("/", func(ctx *enginet.Context) {
 		ctx.String(http.StatusOK, "奥利给")
 	})
-	r.GET("/hello", func(ctx *enginet.Context) {
+	r.GET("/hello/:name", func(ctx *enginet.Context) {
 		ctx.JSON(http.StatusOK, enginet.H{
-			"key": "value",
+			"name": ctx.Param("name"),
 		})
 	})
 	log.Fatal(r.Run(conf.Host + ":" + conf.Port))
