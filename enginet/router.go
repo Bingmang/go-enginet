@@ -1,7 +1,6 @@
 package enginet
 
 import (
-	"log"
 	"net/http"
 	"strings"
 )
@@ -74,14 +73,14 @@ func (r *router) getRoute(method, path string) (*node, map[string]string) {
 
 func (r *router) handle(c *Context) {
 	n, params := r.getRoute(c.Method, c.Path)
-	if n == nil {
-		c.String(http.StatusNotFound, "404 NOT FOUND: %s\n", c.Path)
-		return
+	if n != nil {
+		key := c.Method + "-" + n.pattern
+		c.Params = params
+		c.handlers = append(c.handlers, r.handlers[key])
+	} else {
+		c.handlers = append(c.handlers, func(ctx *Context) {
+			ctx.String(http.StatusNotFound, "404 NOT FOUND: %s\n", c.Path)
+		})
 	}
-	c.Params = params
-	key := c.Method + "-" + n.pattern
-	if r.handlers[key] == nil {
-		log.Fatal("[EngineT] Router error: " + key)
-	}
-	r.handlers[key](c)
+	c.Next()
 }

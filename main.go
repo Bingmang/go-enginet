@@ -27,6 +27,7 @@ func newConfig() *Config {
 func main() {
 	conf := newConfig()
 	r := enginet.New()
+	r.Use(enginet.Logger())
 	r.GET("/", func(ctx *enginet.Context) {
 		ctx.String(http.StatusOK, "奥利给")
 	})

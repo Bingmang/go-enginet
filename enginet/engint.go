@@ -3,6 +3,7 @@ package enginet
 import (
 	"log"
 	"net/http"
+	"strings"
 )
 
 type HandlerFunc func(ctx *Context)
@@ -28,8 +29,19 @@ func New() *Engine {
 }
 
 func (engine *Engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	c := newContext(w, r)
-	engine.router.handle(c)
+	middlewares := make([]HandlerFunc, 0)
+	for _, group := range engine.groups {
+		if strings.HasPrefix(r.URL.Path, group.prefix) {
+			middlewares = append(middlewares, group.middlewares...)
+		}
+	}
+	ctx := newContext(w, r)
+	ctx.handlers = middlewares
+	engine.router.handle(ctx)
+}
+
+func (group *RouterGroup) Use(middlewares ...HandlerFunc) {
+	group.middlewares = append(group.middlewares, middlewares...)
 }
 
 func (group *RouterGroup) Group(prefix string) *RouterGroup {

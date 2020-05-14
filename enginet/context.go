@@ -14,6 +14,9 @@ type Context struct {
 	Path, Method string
 	Params       map[string]string
 	StatusCode   int
+	// middleware
+	handlers []HandlerFunc
+	index    int
 }
 
 func newContext(w http.ResponseWriter, req *http.Request) *Context {
@@ -22,6 +25,16 @@ func newContext(w http.ResponseWriter, req *http.Request) *Context {
 		Req:    req,
 		Path:   req.URL.Path,
 		Method: req.Method,
+		index:  -1,
+	}
+}
+
+func (c *Context) Next() {
+	c.index++
+	// 由于不是所有中间件都会调用c.Next()，所以不能用if，得用for
+	for c.index < len(c.handlers) {
+		c.handlers[c.index](c)
+		c.index++
 	}
 }
 
