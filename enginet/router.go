@@ -41,7 +41,6 @@ func (r *router) addRoute(method, pattern string, handler HandlerFunc) {
 	}
 	r.roots[method].insert(pattern, parts, 0)
 	r.handlers[key] = handler
-	log.Printf("[EngineT] Route %4s - %s", method, pattern)
 }
 
 func (r *router) getRoute(method, path string) (*node, map[string]string) {

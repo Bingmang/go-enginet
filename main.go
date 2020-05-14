@@ -35,5 +35,11 @@ func main() {
 			"name": ctx.Param("name"),
 		})
 	})
+	api := r.Group("/api")
+	{
+		api.GET("/", func(ctx *enginet.Context) {
+			ctx.HTML(http.StatusOK, "<h1>Hello API</h1>")
+		})
+	}
 	log.Fatal(r.Run(conf.Host + ":" + conf.Port))
 }
