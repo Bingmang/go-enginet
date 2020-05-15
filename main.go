@@ -26,8 +26,7 @@ func newConfig() *Config {
 
 func main() {
 	conf := newConfig()
-	r := enginet.New()
-	r.Use(enginet.Logger())
+	r := enginet.Default()
 	r.GET("/", func(ctx *enginet.Context) {
 		ctx.String(http.StatusOK, "奥利给")
 	})
@@ -42,5 +41,8 @@ func main() {
 			ctx.HTML(http.StatusOK, "<h1>Hello API</h1>")
 		})
 	}
+	r.GET("/panic", func(ctx *enginet.Context) {
+		panic("panic")
+	})
 	log.Fatal(r.Run(conf.Host + ":" + conf.Port))
 }
